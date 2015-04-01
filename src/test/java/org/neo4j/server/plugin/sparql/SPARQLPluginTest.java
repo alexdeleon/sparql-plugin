@@ -19,8 +19,6 @@
  */
 package org.neo4j.server.plugin.sparql;
 
-import static org.junit.Assert.assertTrue;
-
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.neo4j2.Neo4j2Graph;
@@ -28,22 +26,15 @@ import com.tinkerpop.blueprints.impls.sail.SailGraph;
 import com.tinkerpop.blueprints.impls.sail.impls.LinkedDataSailGraph;
 import com.tinkerpop.blueprints.oupls.sail.GraphSail;
 import info.aduna.iteration.CloseableIteration;
-
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.kernel.EmbeddedGraphDatabase;
 import org.neo4j.server.rest.repr.OutputFormat;
 import org.neo4j.server.rest.repr.Representation;
 import org.neo4j.server.rest.repr.formats.JsonFormat;
-import org.neo4j.test.ImpermanentGraphDatabase;
 import org.neo4j.test.TestGraphDatabaseFactory;
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
@@ -52,6 +43,12 @@ import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.repository.sail.SailRepositoryConnection;
 import org.openrdf.sail.Sail;
 import org.openrdf.sail.SailException;
+
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
 
 public class SPARQLPluginTest
 {

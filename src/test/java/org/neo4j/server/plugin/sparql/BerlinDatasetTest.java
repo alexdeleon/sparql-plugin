@@ -25,19 +25,10 @@ import com.tinkerpop.blueprints.oupls.sail.GraphSail;
 import com.tinkerpop.blueprints.util.wrappers.batch.BatchGraph;
 import com.tinkerpop.blueprints.util.wrappers.batch.VertexIDType;
 import info.aduna.iteration.CloseableIteration;
-
-import java.io.File;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Transaction;
 import org.neo4j.kernel.impl.util.FileUtils;
-import org.neo4j.test.ImpermanentGraphDatabase;
 import org.neo4j.test.TestGraphDatabaseFactory;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
@@ -52,7 +43,13 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.sail.Sail;
 import org.openrdf.sail.SailConnection;
 
-import static org.junit.Assert.*;
+import java.io.File;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 public class BerlinDatasetTest
 {

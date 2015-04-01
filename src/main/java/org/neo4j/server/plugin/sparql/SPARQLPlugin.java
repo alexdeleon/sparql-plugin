@@ -26,7 +26,9 @@ import info.aduna.iteration.CloseableIteration;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.server.plugins.*;
-import org.neo4j.server.rest.repr.*;
+import org.neo4j.server.rest.repr.Representation;
+import org.neo4j.server.rest.repr.SparqlObjectToRepresentationConverter;
+import org.neo4j.server.rest.repr.ValueRepresentation;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.query.Binding;
 import org.openrdf.query.BindingSet;
@@ -37,6 +39,8 @@ import org.openrdf.query.parser.sparql.SPARQLParser;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.repository.sail.SailRepositoryConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +49,8 @@ import java.util.Map;
 
 @Description("A server side SPARQL plugin for the Neo4j REST server")
 public class SPARQLPlugin extends ServerPlugin {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SPARQLPlugin.class);
 
     private GraphSail sail;
     private SPARQLParser parser;

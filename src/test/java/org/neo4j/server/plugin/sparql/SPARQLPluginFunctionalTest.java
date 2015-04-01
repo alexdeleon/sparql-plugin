@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 public class SPARQLPluginFunctionalTest extends AbstractRestFunctionalTestBase {
     private static final String ENDPOINT = "http://localhost:7474/db/data/ext/SPARQLPlugin/graphdb/execute_sparql";
     private static final String QUAD_ENDPOINT = "http://localhost:7474/db/data/ext/SPARQLPlugin/graphdb/insert_quad";
+    private static final String LOAD_ENDPOINT = "http://localhost:7474/db/data/ext/SPARQLPlugin/graphdb/load_rdf";
 
     /**
      * This endpoint enables the 
@@ -75,6 +76,7 @@ public class SPARQLPluginFunctionalTest extends AbstractRestFunctionalTestBase {
         assertTrue(entity.contains("joe"));
 
     }
+
 
     @Before
     public void cleanContent() {
