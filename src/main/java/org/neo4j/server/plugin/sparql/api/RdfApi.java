@@ -1,9 +1,16 @@
 package org.neo4j.server.plugin.sparql.api;
 
 import com.tinkerpop.blueprints.KeyIndexableGraph;
+import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.impls.neo4j2.Neo4j2Graph;
 import com.tinkerpop.blueprints.oupls.sail.GraphSail;
+import com.tinkerpop.blueprints.util.wrappers.batch.BatchGraph;
+import com.tinkerpop.blueprints.util.wrappers.batch.VertexIDType;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.kernel.impl.util.FileUtils;
+import org.neo4j.server.plugin.sparql.monitor.LoadMonitor;
+import org.openrdf.OpenRDFUtil;
+import org.openrdf.model.Resource;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.query.parser.sparql.SPARQLParser;
 import org.openrdf.repository.RepositoryException;
@@ -11,18 +18,19 @@ import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.repository.sail.SailRepositoryConnection;
 import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.repository.util.RDFLoader;
-import org.openrdf.rio.ParserConfig;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.*;
+import org.openrdf.rio.helpers.RDFHandlerWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.Function1;
+import scala.runtime.AbstractFunction1;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -31,6 +39,7 @@ import java.io.InputStream;
  */
 @Path("/rdf")
 public class RDFApi {
+    private static String dB_DIR = "target/berlindb";
 
     private static final Logger LOG = LoggerFactory.getLogger(RDFApi.class);
 
@@ -51,19 +60,22 @@ public class RDFApi {
             @QueryParam("context") final String context,
             InputStream rdfStream) throws RDFParseException, IOException, RDFHandlerException, RepositoryException {
         LOG.info("Loading RDF");
-        ValueFactory vf = sail.getValueFactory();
+        ValueFactory vf = sc.getValueFactory();
         try {
             RDFInserter rdfInserter = new RDFInserter(sc);
             if(context != null) {
                 rdfInserter.enforceContext(vf.createURI(context));
             }
-            RDFLoader loader = new RDFLoader(new ParserConfig(), vf);
+            RDFLoader loader = new RDFLoader(sc.getParserConfig(), vf);
             String baseUri = context == null?"":context;
-            loader.load(rdfStream, baseUri, RDFFormat.forMIMEType(contentType, RDFFormat.NTRIPLES), rdfInserter);
+            RDFHandler agregatedHandlers = new RDFHandlerWrapper(rdfInserter, loadMonitor());
+
+            sc.begin();
+            loader.load(rdfStream, baseUri, RDFFormat.forMIMEType(contentType, RDFFormat.NTRIPLES), agregatedHandlers);
             sc.commit();
         }
         finally {
-            LOG.info("Ended data loading for context"+context);
+            LOG.info("Ended data loading for context {}", context);
         }
         return Response.ok().build();
 
@@ -83,5 +95,15 @@ public class RDFApi {
             }
         }
 
+    }
+
+    private LoadMonitor loadMonitor() {
+        return new LoadMonitor(new AbstractFunction1<Double, Void>(){
+            @Override
+            public Void apply(Double value) {
+                System.out.println("Loading data at " + value + " stmts/sec");
+                return null;
+            }
+        });
     }
 }
