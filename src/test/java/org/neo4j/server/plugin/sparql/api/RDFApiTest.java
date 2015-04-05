@@ -20,7 +20,7 @@ public class RDFApiTest {
      */
     @Test
     public void loadRdf() throws IOException {
-        String payload = berlin100();
+        String payload = testTriples();
 
         // Given
         try ( ServerControls server = TestServerBuilders.newInProcessBuilder()
